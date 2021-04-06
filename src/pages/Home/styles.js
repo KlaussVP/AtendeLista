@@ -7,6 +7,7 @@ const HomeContainer = styled.section`
   align-items: center;
   color: #f4d160;
   margin-top: 3rem;
+  scrollbar-width: none;
  
   h1 {
     font-size: 3rem;
@@ -79,8 +80,10 @@ const EachList = styled.article`
     opacity: 70%;
   }
 
-  @media(max-width: 885px) {
-
+  :last-child {
+    div {
+      transform: rotate(-90deg);
+    }
   }
 `;
 

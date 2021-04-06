@@ -1,29 +1,35 @@
 import React from 'react';
-import MainContainer from '../../components/MainContainer';
 import { 
   HomeContainer,
   ListsContainer,
   EachList
 } from './styles';
-import { FaFilm, FaUser, FaLightbulb} from 'react-icons/fa';
+import { FaFilm, FaUser, FaSpaceShuttle} from 'react-icons/fa';
+import { useHistory } from 'react-router-dom';
 
 export default function Home() {
+  const history = useHistory();
+
+  function goToList(path) {
+    history.push(path);
+  }
+
   return (
     <HomeContainer>
       <h1>Bem-vindo à Atende Lista!</h1>
       <h2>Escolha sua Lista:</h2>
       <ListsContainer>
-        <EachList>
+        <EachList onClick={() => goToList('/films')}>
           <div><FaFilm /></div>
           <p>Filmes</p>
         </EachList>
-        <EachList>
+        <EachList onClick={() => goToList('/people')}>
           <div><FaUser /></div>
           <p>Pessoas</p>
         </EachList>
-        <EachList>
-          <div><FaLightbulb /></div>
-          <p>Veículos Independentes</p>
+        <EachList onClick={() => goToList('/vehicles')}>
+          <div><FaSpaceShuttle /></div>
+          <p>Veículos</p>
         </EachList>
       </ListsContainer>
     </HomeContainer>
