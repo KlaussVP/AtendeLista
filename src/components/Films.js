@@ -1,32 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import EachListContainer from './Shared/EachListContainer';
 import Title from './Shared/Title';
 import Table from './Shared/Table';
 import Loading from './Shared/Loading';
+import Authorship from './Shared/Authorship';
 import { FaFilm } from 'react-icons/fa';
-import axios from 'axios';
+import { gql, useQuery } from '@apollo/client';
 
 export default function FilmsList() {
-  const [films, setFilms] = useState([]);
-  
-  useEffect(() => {
-    axios.post("https://swapi-graphql.netlify.app/.netlify/functions/index", {
-    query: `
-      query {
-        allFilms {
-          films {
-            id,
-            title,
-            episodeID,
-            releaseDate,
-            director
-          }
+  const filmData = gql`
+    query {
+      allFilms {
+        films {
+          id,
+          title,
+          episodeID,
+          releaseDate,
+          director
         }
-      }    
-    `,
-  })
-  .then((response) => setFilms(response.data.data.allFilms.films));
-  },[]);
+      }
+    }
+  `;
+  const { loading, error, data } = useQuery(filmData);
+
+  if (loading) return <Loading />;
+  if (error) return <p>Error :(</p>;
 
   return(
     <EachListContainer>
@@ -37,21 +35,22 @@ export default function FilmsList() {
       <Table>
         <ul>
           <li>Título original</li>
-          {films.length !== 0 ? films.map((f) => <li key={f.id}>{f.title}</li>) : <Loading />}
+          {data.allFilms.films.map((f) => <li key={f.id}>{f.title}</li>)}
         </ul>
         <ul>
           <li>Episódio</li>
-          {films.length !== 0 ? films.map((f) => <li key={f.id}>{f.episodeID}</li>) : <Loading />}
+          {data.allFilms.films.map((f) => <li key={f.id}>{f.episodeID}</li>)}
         </ul>
         <ul>
           <li>Estréia</li>
-          {films.length !== 0 ? films.map((f) => <li key={f.id}>{f.releaseDate}</li>) : <Loading />}
+          {data.allFilms.films.map((f) => <li key={f.id}>{f.releaseDate}</li>)}
         </ul>
         <ul>
           <li>Direção</li>
-          {films.length !== 0 ? films.map((f) => <li key={f.id}>{f.director}</li>) : <Loading />}
+          {data.allFilms.films.map((f) => <li key={f.id}>{f.director}</li>)}
         </ul>
       </Table>
+      <Authorship />
     </EachListContainer>
   );
 }

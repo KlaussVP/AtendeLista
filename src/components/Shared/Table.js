@@ -6,7 +6,7 @@ const Table = styled.article`
   align-items: center;
   color: #fbeeac;
   background: #000;
-  margin-bottom: 3rem;
+  margin-bottom: 7rem;
 
   ul {
     display: flex;
@@ -26,7 +26,6 @@ const Table = styled.article`
     li {
       border: 2px solid #f4d160;
       padding: 10px;
-      font-size: 1.3;
     }
 
     li:first-child {

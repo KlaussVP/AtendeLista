@@ -6,6 +6,7 @@ import {
 } from './styles';
 import { FaFilm, FaUser, FaSpaceShuttle} from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
+import Authorship from '../../components/Shared/Authorship';
 
 export default function Home() {
   const history = useHistory();
@@ -32,6 +33,7 @@ export default function Home() {
           <p>Veículos</p>
         </EachList>
       </ListsContainer>
+      <Authorship />
     </HomeContainer>
   );
 }

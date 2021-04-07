@@ -1,38 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import EachListContainer from './Shared/EachListContainer';
 import Title from './Shared/Title';
 import Table from './Shared/Table';
-import { FaUser } from 'react-icons/fa';
 import Loading from './Shared/Loading';
-import axios from 'axios';
+import Authorship from './Shared/Authorship';
+import { FaUser } from 'react-icons/fa';
+import { gql, useQuery } from '@apollo/client';
 
 export default function PeopleList() {
-  const [people, setPeople] = useState([]);
-
-  useEffect(() => {
-    axios.post("https://swapi-graphql.netlify.app/.netlify/functions/index", {
-    query: `
-      query {
-        allPeople {
-          people {
-            id,
+  const peopleData = gql`
+    query {
+      allPeople {
+        people {
+          id,
+          name,
+          height,
+          gender,
+          species {
             name,
-            height,
-            gender,
-            species {
-              name,
-              language,
-            },
-            homeworld {
-              name,
-            }
+            language,
+          },
+          homeworld {
+            name,
           }
         }
-      }    
-    `,
-  })
-  .then((response) => setPeople(response.data.data.allPeople.people));
-  },[]);
+      }
+    }
+  `;
+  const { loading, error, data } = useQuery(peopleData);
+
+  if (loading) return <Loading />;
+  if (error) return <p>Error :(</p>;
 
   return(
     <EachListContainer>
@@ -43,24 +41,24 @@ export default function PeopleList() {
       <Table>
         <ul>
           <li>Nome</li>
-          {people.length !== 0 ? people.map((p) => <li key={p.id}>{p.name}</li>) : <Loading />}
+          {data.allPeople.people.map((p) => <li key={p.id}>{p.name}</li>)}
         </ul>
         <ul>
           <li>Altura (m)</li>
-          { people.length !== 0 
-            ? people.map((p) => {
+          {  
+            data.allPeople.people.map((p) => {
               if (p.height === null) {
                 return <li key={p.id}>-</li>
               } else {
                 return <li key={p.id}>{p.height}</li>
               }
-            }) 
-            : <Loading />}
+            })
+          }
         </ul>
         <ul>
           <li>Gênero</li>
-          { people.length !== 0 
-            ? people.map((p) => {
+          { 
+            data.allPeople.people.map((p) => {
               if (p.gender === "male") {
                 return <li key={p.id}>Masculino</li>
               } else if (p.gender === "female") {
@@ -71,12 +69,12 @@ export default function PeopleList() {
                 return <li key={p.id}>{p.gender}</li>
               }
             }) 
-            : <Loading />}
+          }
         </ul>
         <ul>
           <li>Espécie</li>
-          { people.length !== 0 
-            ? people.map((p) => {
+          { 
+            data.allPeople.people.map((p) => {
               if (p.species === null) {
                 return <li key={p.id}>-</li>
               } else if (p.species.name === "Human") {
@@ -85,24 +83,24 @@ export default function PeopleList() {
                 return <li key={p.id}>{p.species.name}</li>
               }
             }) 
-            : <Loading />}
+          }
         </ul>
         <ul>
           <li>Planeta natal</li>
-          { people.length !== 0 
-            ? people.map((p) => {
+          { 
+            data.allPeople.people.map((p) => {
               if (p.homeworld.name === "unknown") {
                 return <li key={p.id}>Desconhecido</li>
               } else {
                 return <li key={p.id}>{p.homeworld.name}</li>
               }
             }) 
-            : <Loading />}
+          }
         </ul>
         <ul>
           <li>Idioma</li>
-          { people.length !== 0 
-            ? people.map((p) => {
+          {
+            data.allPeople.people.map((p) => {
               if (p.species === null || p.species.language === "n/a") {
                 return <li key={p.id}>-</li>
               } else if (p.species.language === "unknown") {
@@ -111,9 +109,10 @@ export default function PeopleList() {
                 return <li key={p.id}>{p.species.language}</li>
               }
             }) 
-            : <Loading />}
+          }
         </ul>
       </Table>
+      <Authorship />
     </EachListContainer>
   );
 }
