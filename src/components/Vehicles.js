@@ -1,32 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import EachListContainer from './Shared/EachListContainer';
 import Title from './Shared/Title';
 import Table from './Shared/Table';
-import { FaSpaceShuttle } from 'react-icons/fa';
 import Loading from './Shared/Loading';
-import axios from 'axios';
+import Authorship from './Shared/Authorship';
+import { FaSpaceShuttle } from 'react-icons/fa';
+import { gql, useQuery } from '@apollo/client';
 
 export default function VehiclesList() {
-  const [vehicles, setVehicles] = useState([]);
-  
-  useEffect(() => {
-    axios.post("https://swapi-graphql.netlify.app/.netlify/functions/index", {
-    query: `
-      query {
-        allVehicles {
-          vehicles {
-            id,
-            name,
-            model,
-            maxAtmospheringSpeed,
-            crew
-          }
+  const filmData = gql`
+    query {
+      allVehicles {
+        vehicles {
+          id,
+          name,
+          model,
+          maxAtmospheringSpeed,
+          crew
         }
-      }    
-    `,
-  })
-  .then((response) => setVehicles(response.data.data.allVehicles.vehicles));
-  },[]);
+      }
+    }
+  `;
+  const { loading, error, data } = useQuery(filmData);
+
+  if (loading) return <Loading />;
+  if (error) return <p>Error :(</p>;
 
   return(
     <EachListContainer>
@@ -37,27 +35,28 @@ export default function VehiclesList() {
       <Table>
         <ul>
           <li>Nome</li>
-          {vehicles.length !== 0 ? vehicles.map((v) => <li key={v.id}>{v.name}</li>) : <Loading />}
+          {data.allVehicles.vehicles.map((v) => <li key={v.id}>{v.name}</li>)}
         </ul>
         <ul>
           <li>Modelo</li>
-          {vehicles.length !== 0 ? vehicles.map((v) => <li key={v.id}>{v.model}</li>) : <Loading />}
+          {data.allVehicles.vehicles.map((v) => <li key={v.id}>{v.model}</li>)}
         </ul>
         <ul>
           <li>Velocidade atmosférica máxima (km/h)</li>
-          { vehicles.length !== 0 
-            ? vehicles.map((v) => {
+          { 
+            data.allVehicles.vehicles.map((v) => {
               return v.maxAtmospheringSpeed === null
                 ? <li key={v.id}>-</li>
                 : <li key={v.id}>{v.maxAtmospheringSpeed}</li>
             }) 
-            : <Loading />}
+          }
         </ul>
         <ul>
           <li>Nº de tripulantes</li>
-          {vehicles.length !== 0 ? vehicles.map((v) => <li key={v.id}>{v.crew}</li>) : <Loading />}
+          {data.allVehicles.vehicles.map((v) => <li key={v.id}>{v.crew}</li>)}
         </ul>
       </Table>
+      <Authorship />
     </EachListContainer>
   );
 }
